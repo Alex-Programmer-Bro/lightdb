@@ -1,18 +1,17 @@
 {
-  "name": "pkg-placeholder",
+  "name": "@alex-programmer/lightdb",
   "type": "module",
   "version": "0.0.0",
   "packageManager": "pnpm@8.7.0",
-  "description": "_description_",
-  "author": "Anthony Fu <anthonyfu117@hotmail.com>",
+  "description": "Lightweight caching of local data",
+  "author": "Alex-Programmer-Bro <alex.lichangnan@gmail.com>",
   "license": "MIT",
-  "funding": "https://github.com/sponsors/antfu",
-  "homepage": "https://github.com/antfu/pkg-placeholder#readme",
+  "homepage": "https://github.com/Alex-Programmer-Bro/lightdb#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/antfu/pkg-placeholder.git"
+    "url": "git+https://github.com/Alex-Programmer-Bro/lightdb.git"
   },
-  "bugs": "https://github.com/antfu/pkg-placeholder/issues",
+  "bugs": "https://github.com/Alex-Programmer-Bro/lightdb/issues",
   "keywords": [],
   "sideEffects": false,
   "exports": {
