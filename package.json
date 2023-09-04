@@ -1,9 +1,9 @@
 {
   "name": "@alex-programmer/lightdb",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.0.1-alpha",
   "packageManager": "pnpm@8.7.0",
-  "description": "Lightweight caching of local data",
+  "description": "Lightweight caching of local array data",
   "author": "Alex-Programmer-Bro <alex.lichangnan@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/Alex-Programmer-Bro/lightdb#readme",
