@@ -1,32 +1,39 @@
-import { beforeAll, expect, test } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { LightDB } from '../src'
 
-const lightDB = new LightDB()
-const tempFoldPath = './.cache/code-snippets.json'
+interface Data {
+  id: number
+  name: string
+  age: number
+}
 
-beforeAll(async () => {
-  await lightDB.init(tempFoldPath)
-})
+const lightDB = new LightDB<Data[]>()
+const tempFoldPath = './.cache/array.json'
 
-test('get data', () => {
-  const snippets = lightDB.read()
-  expect(Array.isArray(snippets)).toBeTruthy()
-})
+describe('array', () => {
+  beforeAll(async () => {
+    await lightDB.init(tempFoldPath, [])
+  })
 
-test('set Array data', async () => {
-  await lightDB.write([])
-  const snippets = lightDB.read()
-  expect(snippets).toEqual([])
+  afterEach(async () => {
+    lightDB.data.length = 0
+    await lightDB.write()
+  })
 
-  const data = [
-    {
+  it('get data', () => {
+    expect(Array.isArray(lightDB.data)).toBeTruthy()
+  })
+
+  it('set Array data', async () => {
+    const mockData = {
       id: 1,
       name: 'hello',
       age: 24,
-    },
-  ]
-  await lightDB.write(data)
-  expect(lightDB.read()).toEqual(data)
+    }
 
-  await lightDB.write([])
+    lightDB.data.push(mockData)
+    await lightDB.write()
+
+    expect(lightDB.data[0]).toEqual(mockData)
+  })
 })

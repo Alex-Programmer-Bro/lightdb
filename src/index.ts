@@ -1,67 +1,68 @@
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
+import debugApp from 'debug'
+
+const debug = debugApp('lightdb')
 
 export class LightDB<T> {
-  private data: T[] = []
+  private cacheFilePath: string
+  public data!: T
 
-  private cacheFilePath!: string
+  constructor() {
+    this.cacheFilePath = ''
+  }
 
-  public async init(filepath: string) {
-    async function createDirectoryAndFile(filePath: string, data: T[]) {
-      const directoryPath = dirname(filePath)
-
-      try {
-        await mkdir(directoryPath, { recursive: true })
-        await writeFile(filePath, JSON.stringify(data))
-      }
-      catch (error) {
-        throw new Error((error as Error).message)
-      }
-    }
-
-    this.cacheFilePath = filepath
+  private async createDirectoryAndFile(filePath: string, data: T[]) {
+    const directoryPath = dirname(filePath)
 
     try {
-      const { isFile } = await stat(this.cacheFilePath)
+      await mkdir(directoryPath, { recursive: true })
+      await writeFile(filePath, JSON.stringify(data))
+    }
+    catch (error) {
+      throw new Error(`Failed to create directory and file: ${(error as Error).message}`)
+    }
+  }
 
-      if (isFile()) {
+  public async init(filepath: string, initValue: T) {
+    if (!filepath)
+      throw new Error('Filepath must be provided')
+
+    try {
+      const fileStats = await stat(filepath)
+
+      if (fileStats.isFile()) {
+        const fileContent = await readFile(filepath, 'utf-8') as T
         try {
-          const content = JSON.parse(await readFile(this.cacheFilePath, 'utf-8'))
-          if (Array.isArray(content))
-            this.data = content
-          else
-            throw new Error('must be array data')
+          const content = JSON.parse(fileContent as string)
+          this.data = content || initValue
         }
         catch (error) {
-          throw new Error((error as Error).message)
+          debug(`parse file content failed, because: ${(error as Error).message}`)
+          this.data = fileContent || initValue
         }
       }
       else {
-        throw new Error(`${this.cacheFilePath} is not a file type`)
+        throw new Error(`${filepath} is not a file`)
       }
     }
     catch (error) {
-      await createDirectoryAndFile(this.cacheFilePath, [])
+      await this.createDirectoryAndFile(filepath, [])
+      this.data = initValue
     }
+
+    this.cacheFilePath = filepath
   }
 
-  public read() {
+  public async write() {
     if (!this.cacheFilePath)
-      throw new Error('Must init first please')
-
-    return this.data
-  }
-
-  public async write(data: T[]) {
-    if (!this.cacheFilePath)
-      throw new Error('Must init first please')
+      throw new Error('Must initialize first')
 
     try {
-      await writeFile(this.cacheFilePath, JSON.stringify(data))
-      this.data = data
+      await writeFile(this.cacheFilePath, JSON.stringify(this.data))
     }
     catch (error) {
-      throw new Error((error as Error).message)
+      throw new Error(`Failed to write data to file: ${(error as Error).message}`)
     }
   }
 }
